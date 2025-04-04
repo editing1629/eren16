@@ -1,0 +1,178 @@
+class Record:
+    def __init__(self):
+        self.name = ""
+        self.number = 0
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_number(self, number):
+        self.number = number
+
+    def get_name(self):
+        return self.name
+
+    def get_number(self):
+        return self.number
+
+    def __str__(self):
+        return f"{self.name} : {self.number}"
+
+
+def input_record():
+    record = Record()
+    name = input('Enter Name: ')
+    number = int(input('Enter Number: '))
+    record.set_name(name)
+    record.set_number(number)
+    return record
+
+
+class HashTableLinear:
+    def __init__(self, size):
+        self.size = size
+        self.elementcount = 0
+        self.table = [None] * self.size
+
+    def hashfun(self, key):
+        return key % self.size
+
+    def insert(self, record):
+        key = record.get_number()
+        pos = self.hashfun(key)
+        if self.table[pos] is None:
+            self.table[pos] = record
+        else:
+            # Linear probing
+            i = 1
+            while True:
+                new_pos = (pos + i) % self.size
+                if self.table[new_pos] is None:
+                    self.table[new_pos] = record
+                    break
+                i += 1
+        self.elementcount += 1
+
+    def search(self, record):
+        key = record.get_number()
+        pos = self.hashfun(key)
+        comparisons = 1
+        if self.table[pos] is not None and self.table[pos].get_number() == key:
+            print(f"Found at position {pos} with {comparisons} comparisons")
+            return pos
+        else:
+            i = 1
+            while True:
+                new_pos = (pos + i) % self.size
+                comparisons += 1
+                if self.table[new_pos] is None:
+                    print("Not found.")
+                    return -1
+                if self.table[new_pos].get_number() == key:
+                    print(f"Found at position {new_pos} with {comparisons} comparisons")
+                    return new_pos
+                i += 1
+
+    def display(self):
+        for i, rec in enumerate(self.table):
+            print(f"{i}: {rec}")
+
+
+class HashTableDoubleHash:
+    def __init__(self, size):
+        self.size = size
+        self.elementcount = 0
+        self.table = [None] * self.size
+        self.prime = self.get_prime()
+
+    def hashfun(self, key):
+        return key % self.size
+
+    def second_hash(self, key):
+        return self.prime - (key % self.prime)
+
+    def get_prime(self):
+        for i in range(self.size - 1, 1, -1):
+            for j in range(2, i):
+                if i % j == 0:
+                    break
+            else:
+                return i
+        return 3
+
+    def insert(self, record):
+        key = record.get_number()
+        pos = self.hashfun(key)
+        if self.table[pos] is None:
+            self.table[pos] = record
+        else:
+            step = self.second_hash(key)
+            i = 1
+            while True:
+                new_pos = (pos + i * step) % self.size
+                if self.table[new_pos] is None:
+                    self.table[new_pos] = record
+                    break
+                i += 1
+        self.elementcount += 1
+
+    def search(self, record):
+        key = record.get_number()
+        pos = self.hashfun(key)
+        comparisons = 1
+        if self.table[pos] is not None and self.table[pos].get_number() == key:
+            print(f"Found at position {pos} with {comparisons} comparisons")
+            return pos
+        else:
+            step = self.second_hash(key)
+            i = 1
+            while True:
+                new_pos = (pos + i * step) % self.size
+                comparisons += 1
+                if self.table[new_pos] is None:
+                    print("Not found.")
+                    return -1
+                if self.table[new_pos].get_number() == key:
+                    print(f"Found at position {new_pos} with {comparisons} comparisons")
+                    return new_pos
+                i += 1
+
+    def display(self):
+        for i, rec in enumerate(self.table):
+            print(f"{i}: {rec}")
+
+
+
+def main():
+    while True:
+        ch = int(input("Choose collision method:\n1. Linear Probing\n2. Double Hashing\n3. Exit\nChoice: "))
+        if ch == 1:
+            size = int(input("Enter size of hash table: "))
+            ht = HashTableLinear(size)
+        elif ch == 2:
+            size = int(input("Enter size of hash table: "))
+            ht = HashTableDoubleHash(size)
+        elif ch == 3:
+            break
+        else:
+            print("Invalid option")
+            continue
+
+        while True:
+            ch2 = int(input("\n1. Add Contact\n2. Search Contact\n3. Display Contacts\n4. Back\nChoice: "))
+            if ch2 == 1:
+                rec = input_record()
+                ht.insert(rec)
+            elif ch2 == 2:
+                rec = input_record()
+                ht.search(rec)
+            elif ch2 == 3:
+                ht.display()
+            elif ch2 == 4:
+                break
+            else:
+                print("Invalid choice.")
+
+
+if __name__ == "__main__":
+    main()

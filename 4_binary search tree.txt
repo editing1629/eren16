@@ -1,0 +1,206 @@
+#include <iostream>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    Node(int val) {
+        data = val;
+        left = right = nullptr;
+    }
+};
+
+class BinarySearchTree {
+private:
+    Node* root;
+
+    Node* insertNode(Node* node, int value) {
+        if (node == nullptr) {
+            return new Node(value);
+        }
+        if (value < node->data) {
+            node->left = insertNode(node->left, value);
+        } else {
+            node->right = insertNode(node->right, value);
+        }
+        return node; // Moved this line outside the if-else to fix logic
+    }
+
+    int findHeight(Node* node) {
+        if (node == nullptr) {
+            return 0;
+        }
+        int leftHeight = findHeight(node->left);
+        int rightHeight = findHeight(node->right);
+        return max(leftHeight, rightHeight) + 1;
+    }
+
+    Node* findMin(Node* node) {
+        while (node && node->left != nullptr) {
+            node = node->left;
+        }
+        return node;
+    }
+
+    void swapChildren(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+        swap(node->left, node->right);
+        swapChildren(node->left);
+        swapChildren(node->right);
+    }
+
+    bool search(Node* node, int value) {
+        if (node == nullptr) {
+            return false;
+        }
+        if (node->data == value) {
+            return true;
+        }
+        if (value < node->data) {
+            return search(node->left, value);
+        } else {
+            return search(node->right, value);
+        }
+    }
+
+    int countNodes(Node* node) {
+        if (node == nullptr) {
+            return 0;
+        }
+        return countNodes(node->left) + countNodes(node->right) + 1;
+    }
+
+    void inorderTraversal(Node* node) {
+        if (node != nullptr) {
+            inorderTraversal(node->left);
+            cout << node->data << " ";
+            inorderTraversal(node->right);
+        }
+    }
+
+    void levelOrderTraversal(Node* root) {
+        if (root == nullptr) {
+            return;
+        }
+        queue<Node*> q;
+        q.push(root);
+        while (!q.empty()) {
+            Node* temp = q.front();
+            q.pop();
+            cout << temp->data << " ";
+            if (temp->left != nullptr) {
+                q.push(temp->left);
+            }
+            if (temp->right != nullptr) {
+                q.push(temp->right);
+            }
+        }
+    }
+
+public:
+    BinarySearchTree() {
+        root = nullptr;
+    }
+
+    void insert(int value) {
+        root = insertNode(root, value);
+    }
+
+    int height() {
+        return findHeight(root);
+    }
+
+    int minValue() {
+        Node* minNode = findMin(root);
+        if (minNode != nullptr) {
+            return minNode->data;
+        }
+        return -1;
+    }
+
+    void swapTree() {
+        swapChildren(root);
+    }
+
+    bool searchValue(int value) {
+        return search(root, value);
+    }
+
+    int count() {
+        return countNodes(root);
+    }
+
+    void displayInOrder() {
+        cout << "In-order Traversal: ";
+        inorderTraversal(root);
+        cout << endl;
+    }
+
+    void displayLevelOrder() {
+        cout << "Level-order Traversal: ";
+        levelOrderTraversal(root);
+        cout << endl;
+    }
+};
+
+int main() {
+    BinarySearchTree bst;
+    int choice, value;
+    while (true) {
+        cout << "\nMenu: \n";
+        cout << "1. Insert new node\n";
+        cout << "2. Find number of nodes in longest path\n";
+        cout << "3. Minimum data value found in the tree\n";
+        cout << "4. Swap left and right children at every node\n";
+        cout << "5. Search a value\n";
+        cout << "6. Display tree (In-order traversal)\n";
+        cout << "7. Display tree (Level-order traversal)\n";
+        cout << "8. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                bst.insert(value);
+                cout << "Node inserted successfully!" << endl;
+                break;
+            case 2:
+                cout << "The number of nodes in the longest path (height): " << bst.height() << endl;
+                break;
+            case 3:
+                cout << "Minimum data value found in the tree: " << bst.minValue() << endl;
+                break;
+            case 4:
+                bst.swapTree();
+                cout << "Tree structure updated: left and right children swapped." << endl;
+                break;
+            case 5:
+                cout << "Enter value to search: ";
+                cin >> value;
+                if (bst.searchValue(value)) {
+                    cout << "Value found in the tree!" << endl;
+                } else {
+                    cout << "Value not found in the tree." << endl;
+                }
+                break;
+            case 6:
+                bst.displayInOrder();
+                break;
+            case 7:
+                bst.displayLevelOrder();
+                break;
+            case 8:
+                cout << "Exiting program..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+    }
+    return 0;
+}
