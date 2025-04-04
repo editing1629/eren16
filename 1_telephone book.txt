@@ -1,177 +1,115 @@
 class Record:
-    def __init__(self):
-        self.name = ""
-        self.number = 0
-
-    def set_name(self, name):
+    def __init__(self, name, number):
         self.name = name
-
-    def set_number(self, number):
         self.number = number
-
-    def get_name(self):
-        return self.name
-
-    def get_number(self):
-        return self.number
 
     def __str__(self):
         return f"{self.name} : {self.number}"
 
 
-def input_record():
-    record = Record()
-    name = input('Enter Name: ')
-    number = int(input('Enter Number: '))
-    record.set_name(name)
-    record.set_number(number)
-    return record
-
-
-class HashTableLinear:
+class HashTable:
     def __init__(self, size):
         self.size = size
-        self.elementcount = 0
-        self.table = [None] * self.size
+        self.table = [None] * size
+        self.comparisons = 0
 
-    def hashfun(self, key):
+    def hash(self, key):
         return key % self.size
 
-    def insert(self, record):
-        key = record.get_number()
-        pos = self.hashfun(key)
-        if self.table[pos] is None:
-            self.table[pos] = record
-        else:
-            # Linear probing
-            i = 1
-            while True:
-                new_pos = (pos + i) % self.size
-                if self.table[new_pos] is None:
-                    self.table[new_pos] = record
-                    break
-                i += 1
-        self.elementcount += 1
+    def linear_probing_insert(self, record):
+        key = self.hash(record.number)
+        for i in range(self.size):
+            pos = (key + i) % self.size
+            if self.table[pos] is None:
+                self.table[pos] = record
+                print(f"Inserted at position {pos}")
+                return
+        print("Hash table full! Cannot insert.")
 
-    def search(self, record):
-        key = record.get_number()
-        pos = self.hashfun(key)
-        comparisons = 1
-        if self.table[pos] is not None and self.table[pos].get_number() == key:
-            print(f"Found at position {pos} with {comparisons} comparisons")
-            return pos
-        else:
-            i = 1
-            while True:
-                new_pos = (pos + i) % self.size
-                comparisons += 1
-                if self.table[new_pos] is None:
-                    print("Not found.")
-                    return -1
-                if self.table[new_pos].get_number() == key:
-                    print(f"Found at position {new_pos} with {comparisons} comparisons")
-                    return new_pos
-                i += 1
+    def linear_probing_search(self, number):
+        key = self.hash(number)
+        self.comparisons = 0
+        for i in range(self.size):
+            pos = (key + i) % self.size
+            self.comparisons += 1
+            if self.table[pos] and self.table[pos].number == number:
+                print(f"Found at position {pos} in {self.comparisons} comparisons")
+                return
+            if self.table[pos] is None:
+                break
+        print("Not found.")
 
-    def display(self):
-        for i, rec in enumerate(self.table):
-            print(f"{i}: {rec}")
+    def quadratic_probing_insert(self, record):
+        key = self.hash(record.number)
+        for i in range(self.size):
+            pos = (key + i * i) % self.size
+            if self.table[pos] is None:
+                self.table[pos] = record
+                print(f"Inserted at position {pos}")
+                return
+        print("Hash table full! Cannot insert.")
 
-
-class HashTableDoubleHash:
-    def __init__(self, size):
-        self.size = size
-        self.elementcount = 0
-        self.table = [None] * self.size
-        self.prime = self.get_prime()
-
-    def hashfun(self, key):
-        return key % self.size
-
-    def second_hash(self, key):
-        return self.prime - (key % self.prime)
-
-    def get_prime(self):
-        for i in range(self.size - 1, 1, -1):
-            for j in range(2, i):
-                if i % j == 0:
-                    break
-            else:
-                return i
-        return 3
-
-    def insert(self, record):
-        key = record.get_number()
-        pos = self.hashfun(key)
-        if self.table[pos] is None:
-            self.table[pos] = record
-        else:
-            step = self.second_hash(key)
-            i = 1
-            while True:
-                new_pos = (pos + i * step) % self.size
-                if self.table[new_pos] is None:
-                    self.table[new_pos] = record
-                    break
-                i += 1
-        self.elementcount += 1
-
-    def search(self, record):
-        key = record.get_number()
-        pos = self.hashfun(key)
-        comparisons = 1
-        if self.table[pos] is not None and self.table[pos].get_number() == key:
-            print(f"Found at position {pos} with {comparisons} comparisons")
-            return pos
-        else:
-            step = self.second_hash(key)
-            i = 1
-            while True:
-                new_pos = (pos + i * step) % self.size
-                comparisons += 1
-                if self.table[new_pos] is None:
-                    print("Not found.")
-                    return -1
-                if self.table[new_pos].get_number() == key:
-                    print(f"Found at position {new_pos} with {comparisons} comparisons")
-                    return new_pos
-                i += 1
+    def quadratic_probing_search(self, number):
+        key = self.hash(number)
+        self.comparisons = 0
+        for i in range(self.size):
+            pos = (key + i * i) % self.size
+            self.comparisons += 1
+            if self.table[pos] and self.table[pos].number == number:
+                print(f"Found at position {pos} in {self.comparisons} comparisons")
+                return
+            if self.table[pos] is None:
+                break
+        print("Not found.")
 
     def display(self):
-        for i, rec in enumerate(self.table):
-            print(f"{i}: {rec}")
-
+        for i in range(self.size):
+            print(f"{i}: {self.table[i]}")
+        print()
 
 
 def main():
+    size = int(input("Enter size of hash table: "))
+    linear_table = HashTable(size)
+    quad_table = HashTable(size)
+
     while True:
-        ch = int(input("Choose collision method:\n1. Linear Probing\n2. Double Hashing\n3. Exit\nChoice: "))
-        if ch == 1:
-            size = int(input("Enter size of hash table: "))
-            ht = HashTableLinear(size)
+        print("\n1. Insert (Linear Probing)")
+        print("2. Search (Linear Probing)")
+        print("3. Insert (Quadratic Probing)")
+        print("4. Search (Quadratic Probing)")
+        print("5. Display Tables")
+        print("6. Exit")
+
+        ch = int(input("Enter choice: "))
+
+        if ch in [1, 3]:
+            name = input("Enter Name: ")
+            number = int(input("Enter Phone Number: "))
+            record = Record(name, number)
+            if ch == 1:
+                linear_table.linear_probing_insert(record)
+            else:
+                quad_table.quadratic_probing_insert(record)
+
         elif ch == 2:
-            size = int(input("Enter size of hash table: "))
-            ht = HashTableDoubleHash(size)
-        elif ch == 3:
+            number = int(input("Enter Phone Number to Search: "))
+            linear_table.linear_probing_search(number)
+
+        elif ch == 4:
+            number = int(input("Enter Phone Number to Search: "))
+            quad_table.quadratic_probing_search(number)
+
+        elif ch == 5:
+            print("\nLinear Probing Table:")
+            linear_table.display()
+            print("Quadratic Probing Table:")
+            quad_table.display()
+
+        elif ch == 6:
             break
         else:
-            print("Invalid option")
-            continue
-
-        while True:
-            ch2 = int(input("\n1. Add Contact\n2. Search Contact\n3. Display Contacts\n4. Back\nChoice: "))
-            if ch2 == 1:
-                rec = input_record()
-                ht.insert(rec)
-            elif ch2 == 2:
-                rec = input_record()
-                ht.search(rec)
-            elif ch2 == 3:
-                ht.display()
-            elif ch2 == 4:
-                break
-            else:
-                print("Invalid choice.")
+            print("Invalid choice")
 
 
 if __name__ == "__main__":
