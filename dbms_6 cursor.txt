@@ -1,0 +1,64 @@
+create table O_rollcall (roll_no number, name varchar2(20));
+
+
+
+insert into O_rollcall values
+ (1, 'Minal');
+insert into O_rollcall values
+ (2, 'Sunil');
+insert into O_rollcall values
+ (3, 'Sarika');
+
+
+select * from O_rollcall;
+
+
+create table N_rollcall (roll_no number, name varchar2(20));
+
+
+insert into N_rollcall values
+  (1, 'Minal');
+
+
+select * from N_rollcall;
+
+
+ed file_name.sql
+
+
+declare
+        cursor cur1 is
+    	select roll_no, name from O_rollcall;
+
+    	cursor cur2 is
+        select roll_no from N_rollcall;
+
+    	r number;
+    	rno number;
+    	name1 varchar2(20);
+
+begin
+    	open cur1;
+    	open cur2;
+
+    	loop
+        fetch cur1 into rno, name1;
+        fetch cur2 into r;
+
+        exit when cur1%notfound;
+
+        if r<>rno then
+                insert into N_rollcall values(rno, name1);
+        end if;
+        end loop;
+	close cur1;
+    	close cur2;
+	end;
+	/
+
+
+@file_name.sql
+
+select * from N_rollcall;
+
+
