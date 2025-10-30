@@ -1,0 +1,92 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+struct Mnemonic_Table
+{
+    int opcode;
+    char mnemonic[10];
+};
+
+struct Assembly_Program
+{
+    char label[10], opcode[10], operand[10];
+};
+
+struct Symbol_Table
+{
+    char symbol[10];
+    int address;
+};
+
+struct Literal_Table
+{
+    char literal[10];
+    int address;
+};
+
+struct Machine_Language
+{
+    int opcode;
+    int reg_operand;
+    int mem_operand;
+};
+
+struct Register_Operand
+{
+    int opcode;
+    char reg[10];
+};
+
+void Read_Instruction(char *, char *, int);
+
+int main()  
+{
+    FILE *fp;
+    struct Mnemonic_Table MT[20];
+    struct Assembly_Program AP[20];
+    struct Symbol_Table ST[20];
+    struct Literal_Table LT[20];
+    struct Register_Operand RO[10];
+    struct Machine_Language ML[20];
+
+    char c, str[10], a[1000], str1[10], str2[10];
+    char label[20], opcode[20], operand[20], mnemonic[20];
+    int i, j, k, len, l, flag;
+    int no_of_mnemonic;
+    int no_of_symbols;
+    int no_of_literals;
+
+    fp = fopen("Mnemonic_Table.txt", "r");
+    fscanf(fp, "%s%s", opcode, mnemonic);
+
+    i = 0;
+    while (strcmp(mnemonic, "PRINT") != 0)
+    {
+        printf("\n%s\t%s\n", opcode, mnemonic);
+        strcpy(MT[i].mnemonic, mnemonic);
+        MT[i].opcode = atoi(opcode);
+        i++;
+        fscanf(fp, "%s%s", opcode, mnemonic);
+    }
+
+    fclose(fp);
+    
+    return 0;  
+}
+
+
+
+create file- Mnemonic_Table.txt
+
+00	STOP
+01	ADD
+02	SUB
+03	MULT
+04	MOVER
+05	MOVEM
+06	COMP
+07	BC
+08	DIV
+09	READ
+10	PRINT
