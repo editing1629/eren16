@@ -1,0 +1,34 @@
+mongo
+
+use MonikaDB
+
+db.createCollection("user_collection")
+
+db.user_collection.insertMany([
+  {"name":"A","marks":80},
+  {"name":"B","marks":90},
+  {"name":"C","marks":70},
+  {"name":"D","marks":85},
+  {"name":"E","marks":95}
+])
+
+
+db.user_collection.find().pretty()
+
+
+var map = function() {
+    emit({ section: this.sec }, this.marks);
+};
+
+
+var reduce = function(section, marks) {
+    return { maximum_marks: Math.max.apply(null, marks) };
+};
+
+
+db.user_collection.mapReduce(map, reduce, { out: 'output' });
+
+
+db.output.find().pretty();
+
+
