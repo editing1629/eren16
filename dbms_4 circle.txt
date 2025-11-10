@@ -1,0 +1,26 @@
+
+CREATE TABLE area_circle (
+    radius NUMBER(5),
+    area NUMBER(10,2)
+);
+
+
+ed path copy circle.sql
+
+DECLARE
+    r NUMBER(5);
+    a NUMBER(10,2);
+BEGIN
+    FOR r IN 5..9 LOOP
+        a := 3.14 * r * r;
+        INSERT INTO area_circle VALUES (r, a);
+    END LOOP;
+    DBMS_OUTPUT.PUT_LINE('Areas inserted successfully for radius 5 to 9');
+END;
+/
+
+
+@path copy circle.sql
+
+
+SELECT * FROM area_circle;
