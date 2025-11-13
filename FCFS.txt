@@ -1,0 +1,70 @@
+# FCFS (First Come First Served) CPU Scheduling
+
+# 1. Define the Process class
+class Process:
+    def __init__(self, id, burst_time, arrival_time):
+        self.id = id
+        self.burst_time = burst_time     # CPU time required by the process
+        self.arrival_time = arrival_time # Time at which process arrives
+        self.waiting_time = 0            # Time process waits before execution
+        self.turnaround_time = 0         # Total time from arrival to completion
+        self.finish_time = 0             # Time at which process finishes execution
+
+
+# 2. Define the FCFS calculation function
+def calculate_fcfs(processes):
+    n = len(processes)
+    total_waiting_time = 0
+    total_turnaround_time = 0
+
+    # Sort processes by arrival time
+    processes.sort(key=lambda x: x.arrival_time)
+
+    # Calculate finish, turnaround, and waiting times
+    for i in range(n):
+        if i == 0:
+            # First process starts immediately at arrival
+            processes[i].finish_time = processes[i].arrival_time + processes[i].burst_time
+        else:
+            # For next processes, start after previous finishes or on arrival (whichever is later)
+            processes[i].finish_time = max(processes[i - 1].finish_time, processes[i].arrival_time) + processes[i].burst_time
+
+        # Turnaround time = finish - arrival
+        processes[i].turnaround_time = processes[i].finish_time - processes[i].arrival_time
+
+        # Waiting time = turnaround - burst
+        processes[i].waiting_time = processes[i].turnaround_time - processes[i].burst_time
+
+        # Accumulate totals
+        total_waiting_time += processes[i].waiting_time
+        total_turnaround_time += processes[i].turnaround_time
+
+    # Compute averages
+    average_waiting_time = total_waiting_time / n
+    average_turnaround_time = total_turnaround_time / n
+
+    return average_waiting_time, average_turnaround_time
+
+
+# 3. Example usage
+if __name__ == "__main__":
+    # Define processes: Process(ID, Burst Time, Arrival Time)
+    processes = [
+        Process(1, 20, 0),
+        Process(2, 3, 0),
+        Process(3, 4, 0)
+    ]
+
+    # Calculate FCFS
+    avg_waiting, avg_turnaround = calculate_fcfs(processes)
+
+    # 4. Print the results
+    print(f"{'Process ID':<12}{'Arrival Time':<15}{'CPU Time':<15}{'Finish Time':<20}{'Turnaround Time':<20}{'Waiting Time':<15}")
+    print("-" * 90)
+
+    for process in processes:
+        print(f"{process.id:<12}{process.arrival_time:<15}{process.burst_time:<15}{process.finish_time:<20}{process.turnaround_time:<20}{process.waiting_time:<15}")
+
+    print("\nAverage Waiting Time: {:.2f}".format(avg_waiting))
+    print("Average Turnaround Time: {:.2f}".format(avg_turnaround))
+  
