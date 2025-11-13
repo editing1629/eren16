@@ -1,0 +1,30 @@
+class Process:
+    def __init__(self, pid, at, bt):
+        self.pid = pid
+        self.at = at
+        self.bt = bt
+        self.rt = bt
+        self.ct = 0
+
+n = int(input("Enter number of processes: "))
+procs = [Process(i+1, int(input(f"AT of P{i+1}: ")), int(input(f"BT of P{i+1}: "))) for i in range(n)]
+
+time, complete = 0, 0
+while complete != n:
+    ready = [p for p in procs if p.at <= time and p.rt > 0]
+    if ready:
+        p = min(ready, key=lambda x: x.rt)
+        p.rt -= 1
+        time += 1
+        if p.rt == 0:
+            complete += 1
+            p.ct = time
+    else:
+        time += 1
+
+print("\nSJF (Preemptive):")
+for p in procs:
+    tat = p.ct - p.at
+    wt = tat - p.bt
+    print(f"P{p.pid}: CT={p.ct}, TAT={tat}, WT={wt}")
+

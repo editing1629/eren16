@@ -1,0 +1,46 @@
+from collections import deque
+
+class Process:
+    def __init__(self, pid, at, bt):
+        self.pid = pid
+        self.at = at
+        self.bt = bt
+        self.rt = bt
+        self.ct = 0
+
+n = int(input("Enter number of processes: "))
+procs = [Process(i+1, int(input(f"AT of P{i+1}: ")), int(input(f"BT of P{i+1}: "))) for i in range(n)]
+quantum = int(input("Enter Time Quantum: "))
+
+q = deque()
+time, rem = 0, n
+arrived = [False]*n
+
+while rem:
+    for i, p in enumerate(procs):
+        if p.at <= time and not arrived[i]:
+            q.append(p)
+            arrived[i] = True
+    if q:
+        p = q.popleft()
+        t = min(quantum, p.rt)
+        p.rt -= t
+        time += t
+        for i, x in enumerate(procs):
+            if x.at <= time and not arrived[i]:
+                q.append(x)
+                arrived[i] = True
+        if p.rt == 0:
+            p.ct = time
+            rem -= 1
+        else:
+            q.append(p)
+    else:
+        time += 1
+
+print("\nRound Robin (Preemptive):")
+for p in procs:
+    tat = p.ct - p.at
+    wt = tat - p.bt
+    print(f"P{p.pid}: CT={p.ct}, TAT={tat}, WT={wt}")
+

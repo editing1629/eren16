@@ -1,0 +1,26 @@
+class Process:
+    def __init__(self, pid, at, bt):
+        self.pid = pid
+        self.at = at
+        self.bt = bt
+        self.ct = self.tat = self.wt = 0
+
+n = int(input("Enter number of processes: "))
+procs = []
+for i in range(n):
+    at = int(input(f"Arrival time of P{i+1}: "))
+    bt = int(input(f"Burst time of P{i+1}: "))
+    procs.append(Process(i+1, at, bt))
+
+procs.sort(key=lambda x: x.at)
+time = 0
+for p in procs:
+    time = max(time, p.at) + p.bt
+    p.ct = time
+    p.tat = p.ct - p.at
+    p.wt = p.tat - p.bt
+
+print("\nFCFS Scheduling:")
+for p in procs:
+    print(f"P{p.pid}: CT={p.ct}, TAT={p.tat}, WT={p.wt}")
+

@@ -1,0 +1,41 @@
+Rename file name-Optimal.java
+
+import java.util.*;
+
+public class Optimal {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter no. of frames: ");
+        int f = sc.nextInt();
+        System.out.print("Enter no. of pages: ");
+        int n = sc.nextInt();
+
+        int[] pages = new int[n];
+        System.out.println("Enter reference string:");
+        for (int i = 0; i < n; i++) pages[i] = sc.nextInt();
+
+        List<Integer> frame = new ArrayList<>();
+        int faults = 0;
+
+        for (int i = 0; i < n; i++) {
+            int p = pages[i];
+            if (!frame.contains(p)) {
+                if (frame.size() == f) {
+                    int farthest = -1, idx = -1;
+                    for (int j = 0; j < f; j++) {
+                        int next = Integer.MAX_VALUE;
+                        for (int k = i + 1; k < n; k++)
+                            if (pages[k] == frame.get(j)) { next = k; break; }
+                        if (next > farthest) { farthest = next; idx = j; }
+                    }
+                    frame.set(idx, p);
+                } else frame.add(p);
+                faults++;
+            }
+            System.out.println("Step " + (i + 1) + ": " + frame);
+        }
+
+        System.out.println("\nTotal Page Faults = " + faults);
+    }
+}
+

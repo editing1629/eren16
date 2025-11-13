@@ -1,0 +1,50 @@
+#rename file name-LRU_Main.java
+
+import java.util.*;
+
+class LRU {
+    int frames;
+    List<Integer> pages;
+
+    LRU(int frames, List<Integer> pages) {
+        this.frames = frames;
+        this.pages = pages;
+    }
+
+    void execute() {
+        List<Integer> memory = new ArrayList<>();
+        int faults = 0;
+
+        for (int p : pages) {
+            if (!memory.contains(p)) {
+                if (memory.size() == frames)
+                    memory.remove(0);
+                memory.add(p);
+                faults++;
+            } else {
+                memory.remove((Integer)p);
+                memory.add(p);
+            }
+            System.out.println("Frames: " + memory);
+        }
+        System.out.println("Total Page Faults: " + faults);
+    }
+}
+
+public class LRU_Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of frames: ");
+        int f = sc.nextInt();
+        System.out.print("Enter number of pages: ");
+        int n = sc.nextInt();
+
+        List<Integer> ref = new ArrayList<>();
+        System.out.println("Enter reference string:");
+        for (int i = 0; i < n; i++) ref.add(sc.nextInt());
+
+        LRU obj = new LRU(f, ref);
+        obj.execute();
+    }
+}
+

@@ -1,0 +1,33 @@
+class Process:
+    def __init__(self, pid, at, bt, pr):
+        self.pid = pid
+        self.at = at
+        self.bt = bt
+        self.pr = pr
+        self.ct = 0
+
+n = int(input("Enter number of processes: "))
+procs = []
+for i in range(n):
+    at = int(input(f"AT of P{i+1}: "))
+    bt = int(input(f"BT of P{i+1}: "))
+    pr = int(input(f"Priority of P{i+1} (lower = higher): "))
+    procs.append(Process(i+1, at, bt, pr))
+
+time, done = 0, []
+while len(done) < n:
+    ready = [p for p in procs if p.at <= time and p not in done]
+    if ready:
+        p = min(ready, key=lambda x: x.pr)
+        time += p.bt
+        p.ct = time
+        done.append(p)
+    else:
+        time += 1
+
+print("\nPriority (Non-Preemptive):")
+for p in procs:
+    tat = p.ct - p.at
+    wt = tat - p.bt
+    print(f"P{p.pid}: PR={p.pr}, CT={p.ct}, TAT={tat}, WT={wt}")
+
