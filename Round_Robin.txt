@@ -1,0 +1,50 @@
+def round_robin(processes, burst_times, time_quantum):
+    n = len(processes)
+    rem_bt = burst_times.copy()  # Remaining burst times
+    
+    waiting_time = [0] * n
+    turnaround_time = [0] * n
+    t = 0  # Current time
+
+    # Keep looping until all processes are done
+    while True:
+        done = True
+
+        for i in range(n):
+            # If process still has burst time left
+            if rem_bt[i] > 0:
+                done = False  # There is a pending process
+
+                # If burst time is greater than time quantum
+                if rem_bt[i] > time_quantum:
+                    t += time_quantum
+                    rem_bt[i] -= time_quantum
+                else:
+                    # Process will finish
+                    t += rem_bt[i]
+                    waiting_time[i] = t - burst_times[i]
+                    rem_bt[i] = 0
+
+        # If all processes are done, exit loop
+        if done:
+            break
+
+    # Calculate turnaround times
+    for i in range(n):
+        turnaround_time[i] = burst_times[i] + waiting_time[i]
+
+    # Print the results
+    print("Process\tBurst Time\tWaiting Time\tTurnaround Time")
+    for i in range(n):
+        print(f"{processes[i]}\t{burst_times[i]}\t\t{waiting_time[i]}\t\t{turnaround_time[i]}")
+
+    print(f"\nAverage Waiting Time: {sum(waiting_time)/n:.2f}")
+    print(f"Average Turnaround Time: {sum(turnaround_time)/n:.2f}")
+
+
+# Example usage
+processes = ['P1', 'P2', 'P3', 'P4']
+burst_times = [10, 5, 8, 6]
+time_quantum = 3
+
+round_robin(processes, burst_times, time_quantum)
