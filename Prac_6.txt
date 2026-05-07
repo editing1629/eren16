@@ -1,0 +1,63 @@
+# Import libraries
+import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.preprocessing import LabelEncoder
+
+# Load dataset
+df = pd.read_csv("iris.csv")
+
+# Display dataset
+print(df.head())
+print(df.info())
+
+# Encode target column
+le = LabelEncoder()
+df['Species'] = le.fit_transform(df['Species'])
+
+# Features and target
+X = df.drop('Species', axis=1)
+y = df['Species']
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train Naive Bayes model
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+# Predict
+y_pred = model.predict(X_test)
+
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+
+print("Confusion Matrix:\n")
+print(cm)
+
+# Accuracy and Error Rate
+accuracy = np.trace(cm) / np.sum(cm)
+error_rate = 1 - accuracy
+
+print("\nAccuracy:", accuracy)
+print("Error Rate:", error_rate)
+
+# TP, FP, FN, TN for each class
+FP = cm.sum(axis=0) - np.diag(cm)
+FN = cm.sum(axis=1) - np.diag(cm)
+TP = np.diag(cm)
+TN = cm.sum() - (FP + FN + TP)
+
+print("\nTrue Positives:", TP)
+print("False Positives:", FP)
+print("False Negatives:", FN)
+print("True Negatives:", TN)
+
+# Precision and Recall
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
