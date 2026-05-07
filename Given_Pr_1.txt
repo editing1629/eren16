@@ -1,0 +1,40 @@
+# Step 1: Import Libraries
+import pandas as pd
+import numpy as np
+
+# Step 2: Load Dataset
+df = pd.read_excel("Practical 1 research_student.xlsx")
+
+# Display first 5 rows
+print(df.head())
+
+# Step 3: Basic Information
+print(df.shape)
+print(df.columns)
+print(df.info())
+
+# Step 4: Check Missing Values
+print(df.isnull().sum())
+
+# Fill missing numerical values with mean
+df['Marks[10th]'] = df['Marks[10th]'].fillna(df['Marks[10th]'].mean())
+
+# Statistical Summary
+print(df.describe())
+
+# Step 5: Data Types
+print(df.dtypes)
+
+# Convert categorical columns
+df['Gender'] = df['Gender'].astype('category')
+df['Branch'] = df['Branch'].astype('category')
+
+# Step 6: Normalize Numerical Column
+df['CGPA'] = (df['CGPA'] - df['CGPA'].min()) / \
+             (df['CGPA'].max() - df['CGPA'].min())
+
+# Step 7: Convert Categorical to Numerical
+df['Gender'] = df['Gender'].cat.codes
+
+# Final Output
+print(df.head())

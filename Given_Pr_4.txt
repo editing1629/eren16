@@ -1,0 +1,95 @@
+# =========================================================
+# Data Analytics I - Linear Regression using Boston Housing Dataset
+# =========================================================
+
+# Step 1: Import Required Libraries
+import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# =========================================================
+# Step 2: Load Dataset
+# =========================================================
+
+df = pd.read_csv("Practical 4 HousingData.csv")
+
+# =========================================================
+# Step 3: Display Dataset Information
+# =========================================================
+
+print("First 5 Rows:")
+print(df.head())
+
+print("\nDataset Information:")
+df.info()
+
+print("\nStatistical Summary:")
+print(df.describe())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# =========================================================
+# Step 4: Handle Missing Values
+# =========================================================
+
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+# =========================================================
+# Step 5: Define Features and Target Variable
+# =========================================================
+
+# Check column names before selecting target
+print("\nColumn Names:")
+print(df.columns)
+
+# Target variable = MEDV
+X = df.drop('MEDV', axis=1)
+y = df['MEDV']
+
+# =========================================================
+# Step 6: Split Dataset into Training and Testing Data
+# =========================================================
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# =========================================================
+# Step 7: Train Linear Regression Model
+# =========================================================
+
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+# =========================================================
+# Step 8: Predict House Prices
+# =========================================================
+
+y_pred = model.predict(X_test)
+
+# =========================================================
+# Step 9: Evaluate Model Performance
+# =========================================================
+
+print("\nMean Squared Error:")
+print(mean_squared_error(y_test, y_pred))
+
+print("\nR2 Score:")
+print(r2_score(y_test, y_pred))
+
+# =========================================================
+# Step 10: Compare Actual and Predicted Values
+# =========================================================
+
+result = pd.DataFrame({
+    'Actual Price': y_test,
+    'Predicted Price': y_pred
+})
+
+print("\nActual vs Predicted Prices:")
+print(result.head())
